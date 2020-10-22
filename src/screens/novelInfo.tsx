@@ -149,6 +149,7 @@ const styles = StyleSheet.create({
     fontSize: STYLES.fontSize.xsm
   },
   downloadButton: {
+    alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
     margin: 5,
@@ -165,6 +166,5 @@ const styles = StyleSheet.create({
     textShadowOffset: {width: 0, height: 0},
     textShadowRadius: 10,
     textAlignVertical: 'center',
-    alignItems: 'center'
   },
 });
