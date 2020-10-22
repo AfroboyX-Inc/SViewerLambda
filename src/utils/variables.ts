@@ -1,0 +1,41 @@
+export const STYLES = {
+  colors: {
+    text: "#222",
+    lightText: "#4a4a4a",
+    border: "#ccc",
+    white: "#fff",
+    primary: "#FE7643",
+    secondary: "#0BB391"
+  },
+  gutters: {
+    none: 0,
+    xxs: 4,
+    xs: 8,
+    sm: 16,
+    md: 26,
+    lg: 32,
+    xl: 40,
+    xxl: 48,
+  },
+  fontSize: {
+    xxxs: 4,
+    xxs: 6,
+    xss: 8,
+    xs: 10,
+    xsm: 12,
+    sm: 14,
+    md: 16,
+    lg: 22,
+    xl: 26,
+    xxl: 32,
+    xxxl: 44,
+    xxxxl: 64,
+  },
+  icon: {
+    xs: 24,
+    sm: 24,
+    md: 32,
+    lg: 48,
+    xl: 24,
+  },
+};
