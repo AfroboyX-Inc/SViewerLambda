@@ -2,8 +2,6 @@ import {useNavigation} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, FlatList, Pressable} from 'react-native';
 
-import Realm, {Results} from 'realm';
-
 import {ChapterSchema, NovelSchema, SectionSchema} from '../database/schemas';
 import {formatDate} from '../functions/myUtils';
 
@@ -33,7 +31,7 @@ function cellView(novel: object) {
 }
 
 export default function Bookshelf() {
-  const [novelData, SetNovelData] = useState({} as Results<Object>);
+  const [novelData, SetNovelData] = useState({});
   const [selectedItem, SetSelectedItem] = useState({});
   const navigation = useNavigation();
   /*
