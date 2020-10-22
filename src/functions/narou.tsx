@@ -1,6 +1,20 @@
 import Axios from 'axios';
 
-import {endDecoded, genreDecoded, xmlDecoded, formatDate} from './myUtils';
+import {endDecoded, genreDecoded, xmlDecoded} from './myUtils';
+
+export type Novel = {
+  ncode: string;
+  title: string; //タイトル
+  author: string; //作者
+  genre: string; //ジャンル
+  totalPoints: number; //点数
+  endStatus: string; //完結ステータス
+  chapterCount: number; //部数
+  wordCount: number; //文字数
+  summary: string; //あらすじ
+  keywords: string; //キーワード
+  lastUpdate: string; //最終更新日
+};
 
 export enum RankingOrder {
   daily = 'dailypoint',
@@ -97,11 +111,10 @@ export async function getRanking(type: RankingOrder, position: number) {
           genre: genreDecoded(data[index]['genre']),
           chapterCount: data[index]['general_all_no'],
           endStatus: endDecoded(data[index]['end']),
-          lastUpdate: formatDate(data[index]['general_lastup']),
+          lastUpdate: data[index]['general_lastup'],
           author: xmlDecoded(data[index]['writer']),
           totalPoints: data[index]['global_point'],
           keywords: xmlDecoded(data[index]['keyword']),
-          novelType: data[index]['novel_type'],
         };
 
         novelList.push(novel);
@@ -140,11 +153,10 @@ export async function searchNarou(
           genre: genreDecoded(data[index]['genre']),
           chapterCount: data[index]['general_all_no'],
           endStatus: endDecoded(data[index]['end']),
-          lastUpdate: formatDate(data[index]['general_lastup']),
+          lastUpdate: data[index]['general_lastup'],
           author: xmlDecoded(data[index]['writer']),
           totalPoints: data[index]['global_point'],
           keywords: xmlDecoded(data[index]['keyword']),
-          novelType: data[index]['novel_type'],
         };
 
         novelList.push(novel);
