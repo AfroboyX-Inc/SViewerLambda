@@ -4,6 +4,8 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import Realm from 'realm';
+
 import BookShelf from './screens/bookshelf';
 import Ranking from './screens/ranking';
 import Search from './screens/search';

@@ -119,6 +119,8 @@ export async function downloadNovel(ncode: string, from: website) {
               });
             });
 
+            sleep(5);
+
             let chapters = $(sections[i]).nextUntil('.chapter_title');
             for (let j = 0; j < chapters.length; j++) {
               let subtitle = $(chapters[j]).children('.subtitle');
@@ -155,6 +157,10 @@ export async function downloadNovel(ncode: string, from: website) {
             let subtitle = $(chapters[i]).children('.subtitle');
             let title = $(subtitle).children('a').text();
             let href = $(subtitle).children().attr('href');
+
+            if (i % 5 == 0) {
+              sleep(5);
+            }
 
             let novelString = await getText(href);
 
