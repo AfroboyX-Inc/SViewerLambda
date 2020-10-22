@@ -1,45 +1,50 @@
 import React from 'react';
-import {View, Text, StyleSheet, Pressable} from 'react-native';
+import {View, Text, StyleSheet, Pressable, Alert} from 'react-native';
 
-import {formatNumber} from '../functions/myUtils';
-import {fromNarou} from '../functions/novelDownloader';
+import {formatDate, formatNumber, isEmpty} from '../functions/myUtils';
+import {downloadNovel, website} from '../functions/novelDownloader';
+import {Novel} from '../functions/narou';
 
 export default function NovelInfo(novel: Novel) {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{novel.title}</Text>
+  if (!isEmpty(novel)) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>{novel.title}</Text>
 
-      <Text>
-        <Text>作者 : {novel.author}</Text>
-        <Text>{'    '}</Text>
-        <Text>ジャンル : {novel.genre}</Text>
-      </Text>
-
-      <Text>
-        <Text style={styles.points}>{formatNumber(novel.totalPoints)}pt</Text>
-        <Text>{'    '}</Text>
         <Text>
-          {novel.endStatus}(全{novel.chapterCount}部分)
+          <Text>作者 : {novel.author}</Text>
+          <Text>{'    '}</Text>
+          <Text>ジャンル : {novel.genre}</Text>
         </Text>
-        <Text>{'    '}</Text>
-        <Text>{formatNumber(novel.wordCount)}文字</Text>
-      </Text>
 
-      <Text>あらすじ : {'\n'}</Text>
-      <View style={styles.summaryContainer}>
-        <Text>{novel.summary}</Text>
+        <Text>
+          <Text style={styles.points}>{formatNumber(novel.totalPoints)}pt</Text>
+          <Text>{'    '}</Text>
+          <Text>
+            {novel.endStatus}(全{novel.chapterCount}部分)
+          </Text>
+          <Text>{'    '}</Text>
+          <Text>{formatNumber(novel.wordCount)}文字</Text>
+        </Text>
+
+        <Text>あらすじ : {'\n'}</Text>
+        <View style={styles.summaryContainer}>
+          <Text>{novel.summary}</Text>
+        </View>
+
+        <Text>キーワード : </Text>
+
+        <Text style={styles.keywords}>{novel.keywords}</Text>
+
+        <Text style={styles.lastUpdate}>
+          最終更新日 : {formatDate(novel.lastUpdate, 'yyyy年MM月dd日 HH時mm分')}
+        </Text>
       </View>
-
-      <Text>キーワード : </Text>
-
-      <Text style={styles.keywords}>{novel.keywords}</Text>
-
-      <Text style={styles.lastUpdate}>最終更新日 : {novel.lastUpdate}</Text>
-    </View>
-  );
+    );
+  }
 }
 
-export function downloadButton(ncode: string, count: number, type: number) {
+export function downloadButton(novel: Novel, website: website) {
   return (
     <Pressable
       style={({pressed}) => [
@@ -48,7 +53,19 @@ export function downloadButton(ncode: string, count: number, type: number) {
         },
         styles.downloadButton,
       ]}
-      onPress={async () => alert(await fromNarou(ncode, count, type))}>
+      onPress={async () => {
+        Alert.alert(`${novel.title}`, 'ダウンロードしますか？', [
+          {
+            text: 'はい',
+            onPress: async () => await downloadNovel(novel.ncode, website),
+          },
+          {
+            text: 'キャンセル',
+            onPress: () => {},
+            style: 'cancel',
+          },
+        ]);
+      }}>
       <Text style={styles.downloadButtonText}>ダウンロード</Text>
     </Pressable>
   );
@@ -57,7 +74,7 @@ export function downloadButton(ncode: string, count: number, type: number) {
 const styles = StyleSheet.create({
   container: {
     marginTop: 10,
-    backgroundColor: 'white',
+    backgroundColor: 'transparent',
     padding: 10,
     flex: 1,
   },

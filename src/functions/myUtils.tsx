@@ -80,22 +80,24 @@ export function xmlDecoded(text: string) {
 }
 
 //"yyyy-MM-dd HH:mm:ss" -> 'yyyy年MM月dd日 HH時mm分'
-export function formatDate(str: string) {
-  let splitDate = str.split(' ');
 
-  let date = splitDate[0];
-  let time = splitDate[1];
+export function formatDate(oppai: any, format: string) {
+  var date = new Date();
+  if (typeof oppai == 'string') {
+    date = new Date(oppai.replace(' ', 'T'));
+  } else if (typeof oppai == 'object') {
+    date = oppai;
+  }
 
-  let yyyy = date.split('-')[0];
-  let MM = date.split('-')[1];
-  let dd = date.split('-')[2];
+  format = format.replace(/yyyy/g, date.getFullYear().toString());
+  format = format.replace(/MM/g, ('0' + (date.getMonth() + 1)).slice(-2));
+  format = format.replace(/dd/g, ('0' + date.getDate()).slice(-2));
+  format = format.replace(/HH/g, ('0' + date.getHours()).slice(-2));
+  format = format.replace(/mm/g, ('0' + date.getMinutes()).slice(-2));
+  format = format.replace(/ss/g, ('0' + date.getSeconds()).slice(-2));
+  format = format.replace(/SSS/g, ('00' + date.getMilliseconds()).slice(-3));
 
-  let HH = time.split(':')[0];
-  let mm = time.split(':')[1];
-
-  let formattedDate = `${yyyy}年${MM}月${dd}日 ${HH}時${mm}分`;
-
-  return formattedDate;
+  return format;
 }
 
 export function formatNumber(num: number) {
@@ -106,4 +108,16 @@ export function formatNumber(num: number) {
 
 export function percentage(num: number, per: number) {
   return (num / 100) * per;
+}
+
+export function isEmpty(obj: any) {
+  return !Object.keys(obj).length;
+}
+
+export function sleep(waitSeconds: number) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, waitSeconds * 1000);
+  });
 }

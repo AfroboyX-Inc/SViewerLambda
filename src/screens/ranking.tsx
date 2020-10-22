@@ -7,13 +7,14 @@ import {
   Dimensions,
   Pressable,
   Modal,
+  Alert,
 } from 'react-native';
 import {Modalize} from 'react-native-modalize';
+
 import {percentage} from '../functions/myUtils';
 import Loader from '../screens/loader';
-
-import {getRanking, RankingOrder} from '../functions/narou';
-
+import {getRanking, RankingOrder, Novel} from '../functions/narou';
+import {website} from '../functions/novelDownloader';
 import NovelInfo, {downloadButton} from './novelInfo';
 
 export default function Ranking() {
@@ -22,6 +23,7 @@ export default function Ranking() {
   const [count, setCount] = useState(1);
   const [selectedItem, setSelectedItem] = useState({} as Novel);
   const [loading, setLoading] = useState(false);
+  const [whichWebsite, setWhichWebsite] = useState(website.narou);
 
   const modalizeRef = useRef<Modalize>({} as Modalize);
   const windowHeight = Dimensions.get('window').height;
@@ -41,11 +43,6 @@ export default function Ranking() {
     });
   }
 
-  function handleModal(item: Novel) {
-    modalizeRef.current.open();
-    setSelectedItem(item);
-  }
-
   return (
     <View style={styles.screenContainer}>
       <Modal children={Loader(loading)} visible={loading} transparent={true} />
@@ -58,10 +55,11 @@ export default function Ranking() {
               styles.cellContainer,
             ]}
             onPress={() => {
-              handleModal(item);
+              setSelectedItem(item);
+              modalizeRef.current.open();
             }}
             onLongPress={() => {
-              alert('ここでもダウンロードできるようにする？');
+              Alert.alert('ここでもダウンロードできるようにする？');
             }}>
             <Text>
               {index + 1}位 : <Text>{item.title}</Text>
@@ -78,11 +76,7 @@ export default function Ranking() {
         ref={modalizeRef}
         modalHeight={percentage(windowHeight, 70)}
         children={NovelInfo(selectedItem)}
-        FooterComponent={downloadButton(
-          selectedItem.ncode,
-          selectedItem.chapterCount,
-          selectedItem.novelType,
-        )}
+        FooterComponent={downloadButton(selectedItem, whichWebsite)}
       />
     </View>
   );
@@ -93,7 +87,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cellContainer: {
-    fontSize: 23,
     height: 50,
     flex: 1,
     justifyContent: 'center',

@@ -7,11 +7,16 @@ import {
   Text,
   Dimensions,
   Pressable,
+  Modal,
+  Keyboard,
+  Alert,
 } from 'react-native';
 import {Modalize} from 'react-native-modalize';
-import {percentage} from '../functions/myUtils';
 
-import {searchNarou, SearchOrder} from '../functions/narou';
+import {percentage} from '../functions/myUtils';
+import {searchNarou, SearchOrder, Novel} from '../functions/narou';
+import {website} from '../functions/novelDownloader';
+import Loader from './loader';
 import NovelInfo, {downloadButton} from './novelInfo';
 
 export default function Search() {
@@ -20,31 +25,28 @@ export default function Search() {
   const [count, setCount] = useState(1);
   const [searchBarText, setSearchBarText] = useState('');
   const [selectedItem, setSelectedItem] = useState({} as Novel);
+  const [loading, setLoading] = useState(false);
+  const [whichWebsite, setWhichWebsite] = useState(website.narou);
 
   const modalizeRef = useRef<Modalize>({} as Modalize);
   const windowHeight = Dimensions.get('window').height;
 
   useEffect(() => {
-    fetchMore();
+    fetchSearch();
   }, [count]);
 
-  async function fetch() {
-    if (searchBarText != '') {
-      let result = await searchNarou(order, count, searchBarText);
-      setResultList(result);
-    }
-  }
+  async function fetchSearch() {
+    setLoading(true);
 
-  async function fetchMore() {
     if (searchBarText != '') {
       let result = await searchNarou(order, count, searchBarText);
+
       setResultList(resultList.concat(result));
     }
-  }
 
-  function handleModal(item: Novel) {
-    modalizeRef.current.open();
-    setSelectedItem(item);
+    setTimeout(() => {
+      setLoading(false);
+    });
   }
 
   return (
@@ -54,19 +56,20 @@ export default function Search() {
           style={styles.searchBar}
           placeholder={'検索〜'}
           value={searchBarText}
-          autoFocus={true}
-          clearTextOnFocus={true}
+          clearButtonMode={'while-editing'}
           onChangeText={(text) => {
             setSearchBarText(text);
           }}
-          onFocus={() => {
+          onKeyPress={() => {
             setResultList([]);
           }}
           onSubmitEditing={() => {
-            fetch();
+            fetchSearch();
           }}
         />
       </View>
+
+      <Modal children={Loader(loading)} visible={loading} transparent={true} />
 
       <FlatList
         data={resultList}
@@ -77,32 +80,31 @@ export default function Search() {
               styles.cellContainer,
             ]}
             onPress={() => {
-              handleModal(item);
+              setSelectedItem(item);
+              modalizeRef.current.open();
             }}
             onLongPress={() => {
-              alert('ここでもダウンロードできるようにする？');
+              Alert.alert('ここでもダウンロードできるようにする？');
             }}>
             <Text>{item.title}</Text>
           </Pressable>
         )}
         keyExtractor={(item) => item.ncode}
         onEndReached={() => {
-          setCount(count + 50);
+          setCount(count + 100);
+        }}
+        onScrollBeginDrag={() => {
+          Keyboard.dismiss();
         }}
         onEndReachedThreshold={0.5}
+        keyboardShouldPersistTaps="handled"
       />
 
       <Modalize
         ref={modalizeRef}
         modalHeight={percentage(windowHeight, 70)}
         children={NovelInfo(selectedItem)}
-        FooterComponent={() =>
-          downloadButton(
-            selectedItem.ncode,
-            selectedItem.chapterCount,
-            selectedItem.novelType,
-          )
-        }
+        FooterComponent={downloadButton(selectedItem, whichWebsite)}
       />
     </View>
   );
@@ -111,8 +113,8 @@ export default function Search() {
 const styles = StyleSheet.create({
   screenContainer: {
     flex: 1,
-    alignContent: 'center',
-    alignItems: 'center',
+    //alignContent: 'center',
+    //alignItems: 'center',
   },
   searchBarContainer: {
     width: '100%',
